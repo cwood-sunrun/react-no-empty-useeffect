@@ -1,15 +1,24 @@
 {
+  "name": "eslint-plugin-react-no-empty-use-effect",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "./node_modules/.bin/esbuild src/react-no-empty-use-effect.ts --platform=node --bundle --outfile=dist/index.js"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^7.0.2",
     "@typescript-eslint/rule-tester": "^7.0.2",
-    "@typescript-eslint/utils": "^7.0.2"
+    "@typescript-eslint/utils": "^7.0.2",
+    "esbuild": "0.23.0"
   },
   "dependencies": {
     "react-native": "^0.73.4",
     "typescript": "^5.3.3",
     "vitest": "^1.3.0"
+  },
+  "peerDependencies": {
+    "eslint": "*",
+    "@typescript-eslint/parser": "*",
+    "typescript": "*"
   }
 }

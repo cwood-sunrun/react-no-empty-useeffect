@@ -1,18 +1,12 @@
-import { ESLintUtils } from "@typescript-eslint/utils";
+import { ESLintUtils} from "@typescript-eslint/utils";
 import * as ts from "typescript";
 
 const createRule = ESLintUtils.RuleCreator(
-  (name) => `https://sunrun.com/rule/${name}`,
+  (name) => name,
 );
 
 
-// function getReturnTypeOfFunction(type, checker) {
-//   // TODO: How to handle multiple signatures?
-//   const signatures = checker.getSignaturesOfType(type, 0);
-//   const returnType = checker.getReturnTypeOfSignature(signatures[0]);
-//   return returnType;
-// }
-
+// TODO: Refactor to loop
 function getParent(symbol) {
   if (symbol.parent) {
     return getParent(symbol.parent);
@@ -45,9 +39,11 @@ export const rule = createRule({
       CallExpression: function(node) {
         const services = ESLintUtils.getParserServices(context);
 
+        const checker = services.program.getTypeChecker();
         // TODO: fix this type complaint
         if (node?.callee?.name === 'useEffect') {
-          const symbol = services.getSymbolAtLocation(node.callee);
+          const tsNode = services.esTreeNodeToTSNodeMap.get(node.callee);
+          const symbol = checker.getSymbolAtLocation(tsNode);
 
           let [cb] = node.arguments;
 
@@ -67,6 +63,9 @@ export const rule = createRule({
   meta: {
     docs: {
       description: "Use named functions for useEffect callbacks.",
+      // @ts-ignore
+      recommended: 'error',
+      requiresTypeChecking: true,
     },
     messages: {
       anonymousUseEffectCallback: "Anonymous useEffect callback.",
@@ -74,6 +73,20 @@ export const rule = createRule({
     type: "suggestion",
     schema: [],
   },
-  name: "enforce-string-in-text",
+  name: "react-no-empty-use-effect",
   defaultOptions: [],
 });
+
+
+export const configs = {
+  recommended: {
+    plugins: ['react-no-empty-use-effect'],
+    rules: {
+      'react-no-empty-use-effect/react-no-empty-use-effect': 'error',
+    },
+  },
+};
+
+export const rules = {
+  'react-no-empty-use-effect': rule,
+};

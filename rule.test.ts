@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import * as vitest from "vitest";
 import { RuleTester } from "@typescript-eslint/rule-tester";
-import { rule } from "./src/enforce-string-in-text";
+import { rule } from "./src/react-no-empty-use-effect";
 
 RuleTester.afterAll = vitest.afterAll;
 RuleTester.it = vitest.it;
