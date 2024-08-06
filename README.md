@@ -1,4 +1,6 @@
-Enforce named callback functions in React `useEffect` hooks.
+# No anonymous useEffect callback functions
+
+> ESLint rule to enforce named callback functions in React `useEffect` hooks.
 
 ##  Get started
 
@@ -9,6 +11,11 @@ npm install
 ```
 npm run test
 ```
+
+### Known Limitations
+
+- Does not support aliases to `useEffect` 
+- Expects import/require to come from `"react"` package (i.e. not fully-specified path, etc.)
 
 ## Useful tools
 

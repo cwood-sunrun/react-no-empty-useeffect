@@ -6,17 +6,20 @@ const createRule = ESLintUtils.RuleCreator(
 );
 
 
-// TODO: Refactor to loop
 function getParent(symbol) {
-  if (symbol.parent) {
-    return getParent(symbol.parent);
+  if (!symbol?.parent) {
+    return symbol;
+  }
+  
+  while (symbol.parent) {
+    symbol = symbol.parent;
   }
 
   return symbol;
 }
 
 
-function isReactImport(symbol) {
+function isReactImport(symbol: ts.Symbol) {
   let isFromReact = false;
   // TODO: what would multiple declarations mean?
   if (symbol && symbol.declarations) {
@@ -37,11 +40,10 @@ export const rule = createRule({
   create(context) {
     return {
       CallExpression: function(node) {
-        const services = ESLintUtils.getParserServices(context);
-
-        const checker = services.program.getTypeChecker();
         // TODO: fix this type complaint
         if (node?.callee?.name === 'useEffect') {
+          const services = ESLintUtils.getParserServices(context);
+          const checker = services.program.getTypeChecker();
           const tsNode = services.esTreeNodeToTSNodeMap.get(node.callee);
           const symbol = checker.getSymbolAtLocation(tsNode);
 
@@ -49,7 +51,7 @@ export const rule = createRule({
 
           // id is null on anon arrow functions 
           // TODO: Fix typing 
-          if (cb && cb?.id === null && isReactImport(symbol)) {
+          if (cb && cb?.id === null && symbol && isReactImport(symbol)) {
             context.report({
               node,
               messageId: "anonymousUseEffectCallback",
@@ -63,8 +65,7 @@ export const rule = createRule({
   meta: {
     docs: {
       description: "Use named functions for useEffect callbacks.",
-      // @ts-ignore
-      recommended: 'error',
+      recommended: "recommended",
       requiresTypeChecking: true,
     },
     messages: {
